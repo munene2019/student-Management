@@ -9,6 +9,7 @@ public class StudentApplication {
 	public static void main(String[] args) {
 		System.out.println("Application Running");
 		SpringApplication.run(StudentApplication.class, args);
+		System.out.println("Testing");
 
 	}
 
