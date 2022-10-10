@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
+@Entity
 @Data
-@Entity(name="courses")
+@Table(name="courses")
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseModel {
