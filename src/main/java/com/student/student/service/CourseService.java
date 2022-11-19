@@ -42,10 +42,6 @@ public class CourseService {
                 map.add(data);
             }
         }
-
-        Gson gson = new Gson();
-        String json = gson.toJson(courseList);
-        System.out.println("Testing ------------z");
         CustomStatus customStatus;
         customStatus = CustomStatus.strip("Success");
         customStatus.setStatus(true);
