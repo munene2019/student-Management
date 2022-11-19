@@ -16,7 +16,7 @@ public class CourseModel {
     @GeneratedValue (strategy = GenerationType.AUTO)
     Integer id;
 @Column(name="Title")
-    private String Title;
+    private String title;
 
 
 }
