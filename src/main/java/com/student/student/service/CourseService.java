@@ -1,5 +1,6 @@
 package com.student.student.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.student.student.DTO.CustomResponse;
 import com.student.student.DTO.CustomStatus;
@@ -14,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,21 +32,41 @@ public class CourseService {
 
         CustomResponse<?> customResponse;
 
-        List<Object[]> courseList = courseRepository.findModels();
+        List<CourseModel> courseList = courseRepository.findModels();
+
+        List<HashMap<String, String>> map = new LinkedList<>();
+        JSONObject jsonData = new JSONObject();
+        if (!courseList.isEmpty()) {
+            for (CourseModel lst : courseList) {
+                HashMap<String, String> data = new HashMap<>();
+                System.out.println("Dataa"+lst.toString());
+                data.put("id", String.valueOf(lst.getId()));
+                data.put("name", String.valueOf(lst.getTitle()));
+                map.add(data);
+            }
+        }
+
+
+
+        Map<String,String> test=new HashMap<>();
+
+        test.put("1333","Munene");
+        test.put("88383","Never");
+
 
         Gson gson = new Gson();
         String json = gson.toJson(courseList);
         System.out.println("Testing ------------z");
-
         CustomStatus customStatus;
         customStatus = CustomStatus.strip("Success");
         customStatus.setStatus(true);
+        JSONObject jsonObject=new JSONObject(map);
 
 //    }
 //    catch (Exception ex) {
 //        System.out.println("Exception!!" + ex);
 //    }
-        return new CustomResponse<>(customStatus, json);
+        return new CustomResponse<>(customStatus, map);
 
     }
 }

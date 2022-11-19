@@ -13,5 +13,5 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<CourseModel, Integer> {
     @Transactional
     @Query("FROM CourseModel")
-    List<Object[]>  findModels();
+    List<CourseModel>  findModels();
 }
