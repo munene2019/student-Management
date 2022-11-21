@@ -2,6 +2,7 @@ package com.student.student.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.student.student.DTO.CourseDto;
 import com.student.student.DTO.CustomResponse;
 import com.student.student.DTO.CustomStatus;
 import com.student.student.Entity.CourseModel;
@@ -31,7 +32,7 @@ public class CourseService {
         CustomResponse<?> customResponse;
 
         List<CourseModel> courseList = courseRepository.findModels();
-
+        org.json.JSONObject balResp = new org.json.JSONObject();
         List<HashMap<String, String>> map = new LinkedList<>();
         if (!courseList.isEmpty()) {
             for (CourseModel lst : courseList) {
@@ -47,6 +48,26 @@ public class CourseService {
         customStatus.setStatus(true);
 
         return new CustomResponse<>(customStatus, map);
+
+    }
+    public CustomResponse<?> registerCourse(CourseDto request) {
+        System.out.println("Request Object"+request.toString());
+
+        CustomResponse<?> customResponse;
+        CustomStatus customStatus=null;
+        if(request.getTitle() !=null){
+            customStatus = CustomStatus.strip("Registration successful");
+            customStatus.setStatus(true);
+            customStatus.setCode(200);
+        }
+        else{
+            customStatus = CustomStatus.strip("Empty Request");
+            customStatus.setStatus(false);
+            customStatus.setCode(400);
+
+        }
+
+        return new CustomResponse<>(customStatus);
 
     }
 }
