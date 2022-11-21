@@ -14,4 +14,6 @@ public interface CourseRepository extends JpaRepository<CourseModel, Integer> {
     @Transactional
     @Query("FROM CourseModel")
     List<CourseModel>  findModels();
+    @Query("FROM CourseModel WHERE title =:title")
+    CourseModel findByTitle(String title);
 }

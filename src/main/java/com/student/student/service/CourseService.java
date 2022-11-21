@@ -37,7 +37,7 @@ public class CourseService {
         if (!courseList.isEmpty()) {
             for (CourseModel lst : courseList) {
                 HashMap<String, String> data = new HashMap<>();
-                System.out.println("Dataa"+lst.toString());
+                System.out.println("Dataa" + lst.toString());
                 data.put("id", String.valueOf(lst.getId()));
                 data.put("name", String.valueOf(lst.getTitle()));
                 map.add(data);
@@ -50,27 +50,33 @@ public class CourseService {
         return new CustomResponse<>(customStatus, map);
 
     }
+
     public CustomResponse<?> registerCourse(CourseDto request) {
-        System.out.println("Request Object"+request.toString());
         CourseModel courseModel = new CourseModel();
 
         CustomResponse<?> customResponse;
-        CustomStatus customStatus=null;
-        if(request.getTitle() !=null){
-            courseModel.setTitle(request.getTitle());
-           courseRepository.save(courseModel);
-            customStatus = CustomStatus.strip("Registration successful");
-            customStatus.setStatus(true);
-            customStatus.setCode(200);
-        }
-        else{
+        CustomStatus customStatus = null;
+        if (request.getTitle() != null) {
+            CourseModel exist = courseRepository.findByTitle(request.getTitle());
+            if (exist != null) {
+                customStatus = CustomStatus.strip(request.getTitle() + "Already Exist");
+                customStatus.setStatus(false);
+                customStatus.setCode(400);
+            } else {
+                courseModel.setTitle(request.getTitle());
+                courseRepository.save(courseModel);
+                customStatus = CustomStatus.strip("Registration successful");
+                customStatus.setStatus(true);
+                customStatus.setCode(200);
+            }
+
+
+        } else {
             customStatus = CustomStatus.strip("Empty Request");
             customStatus.setStatus(false);
             customStatus.setCode(400);
 
         }
-
         return new CustomResponse<>(customStatus);
-
     }
 }
