@@ -56,9 +56,9 @@ public class CourseService {
 
         CustomResponse<?> customResponse;
         CustomStatus customStatus = null;
-        if (request.getTitle() != null) {
+        if (request.equals(null) ||request.equals("")) {
             CourseModel exist = courseRepository.findByTitle(request.getTitle());
-            if (exist != null) {
+            if (exist != null ) {
                 customStatus = CustomStatus.strip(request.getTitle() + "Already Exist");
                 customStatus.setStatus(false);
                 customStatus.setCode(400);

@@ -11,6 +11,7 @@ import com.student.student.DTO.CustomResponse;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class CoursesController {
          }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> registercourse(@Validated(CourseDto.Create.class) @RequestBody CourseDto request){
+    public ResponseEntity<?> registercourse(@Valid @RequestBody CourseDto request){
         CustomResponse<?> response=courseService.registerCourse(request);
         return Util.getResponse(response);
     }
