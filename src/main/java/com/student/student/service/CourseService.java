@@ -6,16 +6,11 @@ import com.student.student.DTO.CourseDto;
 import com.student.student.DTO.CustomResponse;
 import com.student.student.DTO.CustomStatus;
 import com.student.student.Entity.CourseModel;
-import com.student.student.models.Course;
-import com.student.student.models.PagedData;
 import com.student.student.repository.CourseRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +64,6 @@ public class CourseService {
                 customStatus.setStatus(true);
                 customStatus.setCode(200);
             }
-
 
         } else {
             customStatus = CustomStatus.strip("Empty Request");
