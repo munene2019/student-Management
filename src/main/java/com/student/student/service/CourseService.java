@@ -52,10 +52,13 @@ public class CourseService {
     }
     public CustomResponse<?> registerCourse(CourseDto request) {
         System.out.println("Request Object"+request.toString());
+        CourseModel courseModel = new CourseModel();
 
         CustomResponse<?> customResponse;
         CustomStatus customStatus=null;
         if(request.getTitle() !=null){
+            courseModel.setTitle(request.getTitle());
+           courseRepository.save(courseModel);
             customStatus = CustomStatus.strip("Registration successful");
             customStatus.setStatus(true);
             customStatus.setCode(200);
