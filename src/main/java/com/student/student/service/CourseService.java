@@ -47,11 +47,12 @@ public class CourseService {
     }
 
     public CustomResponse<?> registerCourse(CourseDto request) {
+        System.out.println("Dataa"+request.getTitle());
         CourseModel courseModel = new CourseModel();
 
         CustomResponse<?> customResponse;
         CustomStatus customStatus = null;
-        if (request.equals(null) ||request.equals("")) {
+        if (request!=null) {
             CourseModel exist = courseRepository.findByTitle(request.getTitle());
             if (exist != null ) {
                 customStatus = CustomStatus.strip(request.getTitle() + "Already Exist");

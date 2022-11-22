@@ -26,7 +26,7 @@ public class CoursesController {
          }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> registercourse(@Valid @RequestBody CourseDto request){
+    public ResponseEntity<?> registercourse( @RequestBody CourseDto request){
         CustomResponse<?> response=courseService.registerCourse(request);
         return Util.getResponse(response);
     }
