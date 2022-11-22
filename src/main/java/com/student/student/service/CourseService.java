@@ -89,36 +89,6 @@ public class CourseService extends RestcallsHelper {
         return new CustomResponse<>(customStatus);
     }
 
-//    public CustomResponse<?> generateT(TokenDTO request) {
-//
-//        CourseModel courseModel = new CourseModel();
-//
-//        generateToken(request.getMerchantCode(),request.getPassword(), request.getApiKey());
-//        // CustomResponse<?> customResponse;
-//        CustomStatus customStatus = null;
-//        if (request != null) {
-//            CourseModel exist = courseRepository.findByTitle(request.getTitle());
-//            if (exist != null) {
-//                customStatus = CustomStatus.strip(request.getTitle() + " Already Exist");
-//                customStatus.setCode(HttpStatus.BAD_REQUEST.value());
-//                customStatus.setStatus(false);
-//                return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
-//            } else {
-//                //courseModel.setTitle(request.getTitle());
-//                courseRepository.save(courseModel);
-//                customStatus = CustomStatus.strip("Registration successful");
-//                customStatus.setStatus(true);
-//            }
-//
-//        } else {
-//            customStatus = CustomStatus.strip("Empty Request");
-//            customStatus.setStatus(false);
-//            customStatus.setCode(HttpStatus.BAD_REQUEST.value());
-//            return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
-//
-//        }
-//        return new CustomResponse<>(customStatus);
-//    }
 
     public CustomResponse<?> generateToken(TokenDTO request) {
         Map<String, Object> responseMap=null;
@@ -202,39 +172,4 @@ public class CourseService extends RestcallsHelper {
         return new CustomResponse<>(customStatus);
     }
 
-
-    private JSONObject formatResponseObject(JSONObject responseBodyObject) throws JsonProcessingException {
-        JSONObject customResponseObject = new OrderedJSONObject();
-
-        JSONObject responseJsonObject = new JSONObject();
-
-        JSONObject responseObject = responseBodyObject.getJSONObject("responseObject");
-
-        // Creates response Object
-        responseJsonObject.put("currency", responseObject.get("currency").toString());
-        JSONObject available = new JSONObject();
-        available.put("amount", responseObject.get("ammount"));
-        available.put("type", "Available");
-        JSONObject current = new JSONObject();
-        current.put("amount", responseObject.get("ammount"));
-        current.put("type", "Current");
-        JSONArray balances = new JSONArray();
-        balances.put(available);
-        balances.put(current);
-        responseJsonObject.put("balances", balances);
-
-        customResponseObject.put("status", true);
-        customResponseObject.put("code", 0);
-        customResponseObject.put("message", "success");
-
-        customResponseObject.put("data", responseJsonObject);
-
-        JSONObject metadata = new JSONObject();
-      //  metadata.put("merchantId", merchantId);
-      //  metadata.put("serviceId", serviceId);
-        metadata.put("logged", true);
-        customResponseObject.put("metadata", metadata);
-        return customResponseObject;
-
-    }
 }
