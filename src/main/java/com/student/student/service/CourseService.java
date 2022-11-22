@@ -9,7 +9,10 @@ import com.student.student.Entity.CourseModel;
 import com.student.student.repository.CourseRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,29 +50,30 @@ public class CourseService {
     }
 
     public CustomResponse<?> registerCourse(CourseDto request) {
-        System.out.println("Dataa"+request.getTitle());
+        System.out.println("Dataa" + request.getTitle());
         CourseModel courseModel = new CourseModel();
 
-        CustomResponse<?> customResponse;
+       // CustomResponse<?> customResponse;
         CustomStatus customStatus = null;
-        if (request!=null) {
+        if (request != null) {
             CourseModel exist = courseRepository.findByTitle(request.getTitle());
-            if (exist != null ) {
-                customStatus = CustomStatus.strip(request.getTitle() + "Already Exist");
+            if (exist != null) {
+                customStatus = CustomStatus.strip(request.getTitle() + " Already Exist");
+                customStatus.setCode(HttpStatus.BAD_REQUEST.value());
                 customStatus.setStatus(false);
-                customStatus.setCode(400);
+                return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
             } else {
                 courseModel.setTitle(request.getTitle());
                 courseRepository.save(courseModel);
                 customStatus = CustomStatus.strip("Registration successful");
                 customStatus.setStatus(true);
-                customStatus.setCode(200);
             }
 
         } else {
             customStatus = CustomStatus.strip("Empty Request");
             customStatus.setStatus(false);
-            customStatus.setCode(400);
+            customStatus.setCode(HttpStatus.BAD_REQUEST.value());
+            return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
 
         }
         return new CustomResponse<>(customStatus);
