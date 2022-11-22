@@ -24,6 +24,7 @@ public class CustomResponse<T> extends CustomStatus {
     }
 
 	public CustomResponse(CustomStatus customStatus, T obj) {
+		System.out.println("Data Object"+obj);
 		this.status = customStatus.isStatus();
 		this.code = customStatus.getCode();
 		this.message = customStatus.getMessage();

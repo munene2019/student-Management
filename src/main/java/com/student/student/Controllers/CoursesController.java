@@ -2,6 +2,7 @@ package com.student.student.Controllers;
 
 
 import com.student.student.DTO.CourseDto;
+import com.student.student.DTO.TokenDTO;
 import com.student.student.Entity.CourseModel;
 import com.student.student.Utils.Util;
 import com.student.student.service.CourseService;
@@ -28,6 +29,11 @@ public class CoursesController {
     @PostMapping(path = "/register")
     public ResponseEntity<?> registercourse( @RequestBody CourseDto request){
         CustomResponse<?> response=courseService.registerCourse(request);
+        return Util.getResponse(response);
+    }
+    @PostMapping(path = "/generateToken")
+    public ResponseEntity<?> tokenGenerate( @RequestBody TokenDTO request){
+        CustomResponse<?> response=courseService.generateToken(request);
         return Util.getResponse(response);
     }
 }

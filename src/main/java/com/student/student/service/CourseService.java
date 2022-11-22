@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.student.student.DTO.CourseDto;
 import com.student.student.DTO.CustomResponse;
 import com.student.student.DTO.CustomStatus;
+import com.student.student.DTO.TokenDTO;
 import com.student.student.Entity.CourseModel;
 import com.student.student.Utils.OrderedJSONObject;
 import com.student.student.helpers.RestcallsHelper;
@@ -61,7 +62,7 @@ public class CourseService extends RestcallsHelper {
         System.out.println("Dataa" + request.getTitle());
         CourseModel courseModel = new CourseModel();
 
-        generateToken("343434");
+       // generateToken("343434");
        // CustomResponse<?> customResponse;
         CustomStatus customStatus = null;
         if (request != null) {
@@ -88,56 +89,120 @@ public class CourseService extends RestcallsHelper {
         return new CustomResponse<>(customStatus);
     }
 
+//    public CustomResponse<?> generateT(TokenDTO request) {
+//
+//        CourseModel courseModel = new CourseModel();
+//
+//        generateToken(request.getMerchantCode(),request.getPassword(), request.getApiKey());
+//        // CustomResponse<?> customResponse;
+//        CustomStatus customStatus = null;
+//        if (request != null) {
+//            CourseModel exist = courseRepository.findByTitle(request.getTitle());
+//            if (exist != null) {
+//                customStatus = CustomStatus.strip(request.getTitle() + " Already Exist");
+//                customStatus.setCode(HttpStatus.BAD_REQUEST.value());
+//                customStatus.setStatus(false);
+//                return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
+//            } else {
+//                //courseModel.setTitle(request.getTitle());
+//                courseRepository.save(courseModel);
+//                customStatus = CustomStatus.strip("Registration successful");
+//                customStatus.setStatus(true);
+//            }
+//
+//        } else {
+//            customStatus = CustomStatus.strip("Empty Request");
+//            customStatus.setStatus(false);
+//            customStatus.setCode(HttpStatus.BAD_REQUEST.value());
+//            return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
+//
+//        }
+//        return new CustomResponse<>(customStatus);
+//    }
 
-    private void generateToken(String account) {
+    public CustomResponse<?> generateToken(TokenDTO request) {
+        Map<String, Object> responseMap=null;
 
        // responseMap.put("MESSAGE", "Failed");
-       // responseMap.put("STATUS", false);
+        // responseMap.put("STATUS", false);
 
         String Url ="https://api-finserve-uat.azure-api.net/authentication/api/v3/authenticate/merchant";
 
         JSONObject payload = new JSONObject();
 
-        payload.put("merchantCode", "7712521263");
-        payload.put("consumerSecret", "sh1Q57q6g3QCg1H2hM0cKoSCNHw94v");
+        payload.put("merchantCode", request.getMerchantCode());
+        payload.put("consumerSecret", request.getPassword());
+        CustomStatus customStatus = null;
         try {
 
             System.out.println("before RESPONSE......." );
             ResponseEntity<String> response = httpsHelper(HttpMethod.POST, Url,
-                    "65efggggggggrgg", payload.toString(), MediaType.APPLICATION_JSON, "8778888");
+                    request.getApiKey(), payload.toString(), MediaType.APPLICATION_JSON, "8778888");
             System.out.println("RESPONSE......." +response.toString());
 
             if (response.getStatusCodeValue() == 200) {
+                customStatus = CustomStatus.strip("Empty Request");
+           customStatus.setStatus(true);
+           customStatus.setCode(200);
+           // return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
                 JSONObject responseBodyObject = new JSONObject(response.getBody());
-                System.out.println("Response body....Token "+responseBodyObject.get("accessToken"));
-                if (responseBodyObject.getBoolean("successful")) {
-
-                    // Format response
-                    JSONObject responseJsonObject = responseBodyObject.getJSONObject("responseObject");
-                  //  responseMap.put("DATA-OUT", formatResponseObject("66"));
-                   // responseMap.put("STATUS", true);
-                   // responseMap.put("MESSAGE", "Success");
+                System.out.println("Response body....Token "+responseBodyObject);
 
 
-                } else {
+                ObjectMapper mapper = new ObjectMapper();
+                String json = responseBodyObject.toString();
 
 
 
-                }
+                    // convert JSON string to Map
+                    Map<String, String> map = mapper.readValue(json, Map.class);
 
+                    // it works
+                    //Map<String, String> map = mapper.readValue(json, new TypeReference<Map<String, String>>() {});
+
+                    System.out.println(map);
+
+
+
+                return new CustomResponse<>(customStatus,map );
+//                if (responseBodyObject.getBoolean("successful")) {
+//
+//                    // Format response
+//                    JSONObject responseJsonObject = responseBodyObject.getJSONObject("responseObject");
+//                    //  responseMap.put("DATA-OUT", formatResponseObject("66"));
+//                    // responseMap.put("STATUS", true);
+//                    // responseMap.put("MESSAGE", "Success");
+//
+//
+//                }
+//
+//                else {
+//
+//
+//
+//                }
+
+            }
+            else{
+               // customStatus = CustomStatus.strip("Empty Request");
+                customStatus.setStatus(false);
+                customStatus.setCode((response.getStatusCodeValue()));
+                return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
             }
 
         } catch (Exception ex) {
 
-           // serviceExceptionHandler(ex, logged, responseMap, account);
+            // serviceExceptionHandler(ex, logged, responseMap, account);
 
         } finally {
             // Persist
 
 
         }
-
+        return new CustomResponse<>(customStatus);
     }
+
+
     private JSONObject formatResponseObject(JSONObject responseBodyObject) throws JsonProcessingException {
         JSONObject customResponseObject = new OrderedJSONObject();
 

@@ -67,7 +67,7 @@ public class RestcallsHelper {
 
 	}
 
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String token, String body,
+	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String apiKey, String body,
 			MediaType content, String uniqueIdentifier) throws Exception {
 		System.out.println("Inside helper");
 		// HttpHeaders
@@ -76,7 +76,7 @@ public class RestcallsHelper {
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(content);
 		//headers.setBearerAuth(token);
-		headers.add("Api-Key", "9yQwHtRRBMxcGIRTKFOTbIPVCBDAcHGs73xjQ6t4chzdy6gWFkvIeoqqNCBnSufy8UxE8ItKf56APTpUerzgfg==");
+		headers.add("Api-Key", apiKey);
 
 		HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
 
