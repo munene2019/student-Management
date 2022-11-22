@@ -1,19 +1,13 @@
 package com.student.student.Controllers;
-
-
 import com.student.student.DTO.CourseDto;
 import com.student.student.DTO.TokenDTO;
-import com.student.student.Entity.CourseModel;
 import com.student.student.Utils.Util;
 import com.student.student.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import com.student.student.DTO.CustomResponse;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/course")
