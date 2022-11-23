@@ -109,7 +109,7 @@ public class CourseService extends RestcallsHelper {
             ResponseEntity<String> response = httpsHelper(HttpMethod.POST, Url,
                     apiKey, payload.toString(), MediaType.APPLICATION_JSON, "8778888");
             System.out.println("RESPONSE..here....." +response.getBody());
-            System.out.println("RESPONSE..here.code...." +response.getStatusCode());
+            System.out.println("RESPONSE..here....." +response.getBody());
             //System.out.println("RESPONSE..code....." +response.getBody().ge);
 
             if (response.getStatusCodeValue() == 200) {
@@ -123,7 +123,32 @@ public class CourseService extends RestcallsHelper {
                 String json = responseBodyObject.toString();
                     // convert JSON string to Map
                     Map<String, String> map = mapper.readValue(json, Map.class);
+
+                    // it works
+                    //Map<String, String> map = mapper.readValue(json, new TypeReference<Map<String, String>>() {});
+
+                    System.out.println(map);
+
+
+
                 return new CustomResponse<>(customStatus,map );
+//                if (responseBodyObject.getBoolean("successful")) {
+//
+//                    // Format response
+//                    JSONObject responseJsonObject = responseBodyObject.getJSONObject("responseObject");
+//                    //  responseMap.put("DATA-OUT", formatResponseObject("66"));
+//                    // responseMap.put("STATUS", true);
+//                    // responseMap.put("MESSAGE", "Success");
+//
+//
+//                }
+//
+//                else {
+//
+//
+//
+//                }
+
             }
             else{
                // customStatus = CustomStatus.strip("Empty Request");
@@ -138,6 +163,7 @@ public class CourseService extends RestcallsHelper {
 
         } finally {
             // Persist
+
 
         }
         return new CustomResponse<>(customStatus);
