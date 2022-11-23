@@ -105,8 +105,8 @@ try {
 	return apisResponse;
 }
 catch (Exception ex){
-	final ResponseEntity<String> apisResponse=null;
-	System.out.println("EXCEPTION............."+ex);
+	 ResponseEntity<String> apisResponse= ResponseEntity.ok("Testinh");
+	//System.out.println("EXCEPTION............."+ex.getMessage());
 	return apisResponse;
 }
 

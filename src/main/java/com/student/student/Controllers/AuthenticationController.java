@@ -16,8 +16,9 @@ public class AuthenticationController {
     @Autowired
     CourseService courseService;
     @PostMapping(path = "/generateToken")
-    public ResponseEntity<?> tokenGenerate( @RequestBody TokenDTO request){
-        CustomResponse<?> response=courseService.generateToken(request);
-        return Util.getResponse(response);
+    public CustomResponse<?> tokenGenerate(@RequestHeader("apiKey") String apiKey, @RequestBody TokenDTO request){
+        CustomResponse<?> response=courseService.generateToken(apiKey,request);
+        return response;
+       // return Util.getResponse(response);
     }
 }

@@ -90,7 +90,7 @@ public class CourseService extends RestcallsHelper {
     }
 
 
-    public CustomResponse<?> generateToken(TokenDTO request) {
+    public CustomResponse<?> generateToken(String apiKey,TokenDTO request) {
         Map<String, Object> responseMap=null;
 
        // responseMap.put("MESSAGE", "Failed");
@@ -107,8 +107,8 @@ public class CourseService extends RestcallsHelper {
 
             System.out.println("before RESPONSE......." );
             ResponseEntity<String> response = httpsHelper(HttpMethod.POST, Url,
-                    request.getApiKey(), payload.toString(), MediaType.APPLICATION_JSON, "8778888");
-            System.out.println("RESPONSE......." +response.toString());
+                    apiKey, payload.toString(), MediaType.APPLICATION_JSON, "8778888");
+            System.out.println("RESPONSE..here....." +response.toString());
 
             if (response.getStatusCodeValue() == 200) {
                 customStatus = CustomStatus.strip("Empty Request");

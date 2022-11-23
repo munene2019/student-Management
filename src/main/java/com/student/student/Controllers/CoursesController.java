@@ -25,9 +25,5 @@ public class CoursesController {
         CustomResponse<?> response=courseService.registerCourse(request);
         return Util.getResponse(response);
     }
-    @PostMapping(path = "/generateToken")
-    public ResponseEntity<?> tokenGenerate( @RequestBody TokenDTO request){
-        CustomResponse<?> response=courseService.generateToken(request);
-        return Util.getResponse(response);
-    }
+
 }
