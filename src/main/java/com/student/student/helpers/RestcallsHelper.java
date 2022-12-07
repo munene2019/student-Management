@@ -1,4 +1,7 @@
 package com.student.student.helpers;
+
+import com.student.exceptions.BaseException;
+import com.student.student.DTO.CustomResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
@@ -7,270 +10,260 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.Map.Entry;
 
 @Service
 public class RestcallsHelper {
 
-	protected static final String EMPTY_BODY_RESPOSE = "A terminating resource not found";
-	protected static final String ERROR_404_MESSAGE = "A terminating resource not found";
-	//protected static final String USER_AGENT = AppConstants.CLOSED_HTTP_CODE;
+    protected static final String EMPTY_BODY_RESPOSE = "A terminating resource not found";
+    protected static final String ERROR_404_MESSAGE = "A terminating resource not found";
+    //protected static final String USER_AGENT = AppConstants.CLOSED_HTTP_CODE;
 
-	//@Value(value = "${app.config.connection.timeout}")
-	private int connectionTimeout;
+    //@Value(value = "${app.config.connection.timeout}")
+    private int connectionTimeout;
 
-	//@Value(value = "${app.config.read.timeout}")
-	private int readTimeout;
+    //@Value(value = "${app.config.read.timeout}")
+    private int readTimeout;
 
-	public RestcallsHelper() {
-	}
+    public RestcallsHelper() {
+    }
 
-	public RestcallsHelper(int connectionTimeout, int readTimeout) {
-		this.connectionTimeout = connectionTimeout;
-		this.readTimeout = readTimeout;
-	}
+    public RestcallsHelper(int connectionTimeout, int readTimeout) {
+        this.connectionTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
+    }
 
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, MediaType content,
-			String uniqueIdentifier) throws Exception {
+    protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, MediaType content,
+                                                 String uniqueIdentifier) throws Exception {
 
-		// HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
+        // HttpHeaders
+        HttpHeaders headers = new HttpHeaders();
 
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(content);
-		headers.add("User-Agent", "USER_AGENT");
+        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+        headers.setContentType(content);
+        headers.add("User-Agent", "USER_AGENT");
 
-		HttpEntity<String> requestEntityApp = new HttpEntity<>("{}", headers);
+        HttpEntity<String> requestEntityApp = new HttpEntity<>("{}", headers);
 
-		// SimpleClientHttpRequestFactory simpleFactory = new
-		// SimpleClientHttpRequestFactory();
-		HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
+        // SimpleClientHttpRequestFactory simpleFactory = new
+        // SimpleClientHttpRequestFactory();
+        HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
 
-		simpleFactory.setConnectTimeout(connectionTimeout);
-		simpleFactory.setReadTimeout(readTimeout);
-		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
+        simpleFactory.setConnectTimeout(connectionTimeout);
+        simpleFactory.setReadTimeout(readTimeout);
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
 
-		RestTemplate restTemplate = new RestTemplate(factory);
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (CollectionUtils.isEmpty(interceptors)) {
-			interceptors = new ArrayList<>();
-		}
-		interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
-		restTemplate.setInterceptors(interceptors);
+        RestTemplate restTemplate = new RestTemplate(factory);
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
+        restTemplate.setInterceptors(interceptors);
 
-		final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
+        final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
 
-		return apisResponse;
+        return apisResponse;
 
-	}
+    }
 
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String apiKey, String body,
-			MediaType content, String uniqueIdentifier) throws Exception {
-		System.out.println("Inside helper");
-		// HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
+    protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String apiKey, String body,
+                                                 MediaType content, String uniqueIdentifier) throws Exception {
+        // HttpHeaders
+        ResponseEntity<String> apisResponse;
+        HttpHeaders headers = new HttpHeaders();
 
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(content);
-		//headers.setBearerAuth(token);
-		headers.add("Api-Key", apiKey);
+        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+        headers.setContentType(content);
+        //headers.setBearerAuth(token);
+        headers.add("Api-Key", apiKey);
+        HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
+        try {
+            HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
+            simpleFactory.setConnectTimeout(1000);
+            simpleFactory.setReadTimeout(1000);
 
-		HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
+            ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
 
-//		RestTemplate restTemplate = new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(connectionTimeout))
-//				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
-try {
-	HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
-	simpleFactory.setConnectTimeout(1000);
-	simpleFactory.setReadTimeout(1000);
+            RestTemplate restTemplate = new RestTemplate(factory);
+            List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+            apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
 
-	ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
+            return apisResponse;
+        } catch (HttpClientErrorException e) {
+            apisResponse = new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
 
-	RestTemplate restTemplate = new RestTemplate(factory);
-	List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-//		if (CollectionUtils.isEmpty(interceptors)) {
-//			interceptors = new ArrayList<>();
-//		}
-//		interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
-//		restTemplate.setInterceptors(interceptors);
-	System.out.println("helper3 url" + url);
-	System.out.println("helper3 body " + requestEntityApp);
-	final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
+            return apisResponse;
 
-	System.out.println("Response Body........." + apisResponse);
+        }
 
-	return apisResponse;
-}
-catch (Exception ex){
-	 ResponseEntity<String> apisResponse= ResponseEntity.ok(ex.getMessage());
-	//System.out.println("EXCEPTION............."+ex.getMessage());
-	return apisResponse;
-}
+    }
 
-	}
+    protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String body, MediaType content,
+                                                 String uniqueIdentifier) throws Exception {
+        System.out.println("Inside helper");
 
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String body, MediaType content,
-			String uniqueIdentifier) throws Exception {
-		System.out.println("Inside helper");
+        // HttpHeaders
+        HttpHeaders headers = new HttpHeaders();
 
-		// HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+        headers.setContentType(content);
+        headers.add("User-Agent", "USER_AGENT");
 
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(content);
-		headers.add("User-Agent", "USER_AGENT");
-
-		HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
+        HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
 
 //		RestTemplate restTemplate = new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(connectionTimeout))
 //				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
 
-		HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
-		simpleFactory.setConnectTimeout(connectionTimeout);
-		simpleFactory.setReadTimeout(readTimeout);
-		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
+        HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
+        simpleFactory.setConnectTimeout(connectionTimeout);
+        simpleFactory.setReadTimeout(readTimeout);
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
 
-		RestTemplate restTemplate = new RestTemplate(factory);
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (CollectionUtils.isEmpty(interceptors)) {
-			interceptors = new ArrayList<>();
-		}
-		interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
-		restTemplate.setInterceptors(interceptors);
+        RestTemplate restTemplate = new RestTemplate(factory);
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
+        restTemplate.setInterceptors(interceptors);
 
-		final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
+        final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
 
-		String apiResponse = apisResponse.getBody();
+        String apiResponse = apisResponse.getBody();
 
-		return apisResponse;
+        return apisResponse;
 
-	}
+    }
 
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String body,
-			Map<String, String> headersMap, MediaType content, String uniqueIdentifier) throws Exception {
+    protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, String body,
+                                                 Map<String, String> headersMap, MediaType content, String uniqueIdentifier) throws Exception {
 
-		// HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(content);
-		for (Entry<String, String> entry : headersMap.entrySet()) {
-			headers.set(entry.getKey(), entry.getValue());
-		}
-		headers.add("User-Agent", "USER_AGENT");
+        // HttpHeaders
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+        headers.setContentType(content);
+        for (Entry<String, String> entry : headersMap.entrySet()) {
+            headers.set(entry.getKey(), entry.getValue());
+        }
+        headers.add("User-Agent", "USER_AGENT");
 
-		HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
-
-//		RestTemplate restTemplate = new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(connectionTimeout))
-//				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
-
-		HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
-		simpleFactory.setConnectTimeout(connectionTimeout);
-		simpleFactory.setReadTimeout(readTimeout);
-		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
-
-		RestTemplate restTemplate = new RestTemplate(factory);
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (CollectionUtils.isEmpty(interceptors)) {
-			interceptors = new ArrayList<>();
-		}
-		interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
-		restTemplate.setInterceptors(interceptors);
-
-		final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
-
-		return apisResponse;
-
-	}
-
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, HashMap<String, Object> params,
-			MediaType contentType, String uniqueIdentifier) throws Exception {
-
-		String urlparams = convertToHashMaptoQueryString(params);
-
-		// HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
-
-		headers.setContentType(contentType);
-		headers.add("User-Agent", "USER_AGENT");
-
-		HttpEntity<String> requestEntityApp = new HttpEntity<>(urlparams, headers);
+        HttpEntity<String> requestEntityApp = new HttpEntity<>(body, headers);
 
 //		RestTemplate restTemplate = new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(connectionTimeout))
 //				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
 
-		HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
-		simpleFactory.setConnectTimeout(connectionTimeout);
-		simpleFactory.setReadTimeout(readTimeout);
-		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
+        HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
+        simpleFactory.setConnectTimeout(connectionTimeout);
+        simpleFactory.setReadTimeout(readTimeout);
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
 
-		RestTemplate restTemplate = new RestTemplate(factory);
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (CollectionUtils.isEmpty(interceptors)) {
-			interceptors = new ArrayList<>();
-		}
-		interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
-		restTemplate.setInterceptors(interceptors);
+        RestTemplate restTemplate = new RestTemplate(factory);
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
+        restTemplate.setInterceptors(interceptors);
 
-		final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
+        final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
 
-		return apisResponse;
+        return apisResponse;
 
-	}
+    }
 
-	protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, HashMap<String, Object> params,
-			String uniqueIdentifier) {
+    protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, HashMap<String, Object> params,
+                                                 MediaType contentType, String uniqueIdentifier) throws Exception {
 
-		String urlparams = convertToHashMaptoQueryString(params);
+        String urlparams = convertToHashMaptoQueryString(params);
 
-		// HttpHeaders
-		HttpHeaders headers = new HttpHeaders();
+        // HttpHeaders
+        HttpHeaders headers = new HttpHeaders();
 
-		// headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON
-		// }));
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.add("User-Agent", "USER_AGENT");
+        headers.setContentType(contentType);
+        headers.add("User-Agent", "USER_AGENT");
 
-		HttpEntity<String> requestEntityApp = new HttpEntity<>(urlparams, headers);
+        HttpEntity<String> requestEntityApp = new HttpEntity<>(urlparams, headers);
 
 //		RestTemplate restTemplate = new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(connectionTimeout))
 //				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
 
-		HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
-		simpleFactory.setConnectTimeout(connectionTimeout);
-		simpleFactory.setReadTimeout(readTimeout);
-		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
+        HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
+        simpleFactory.setConnectTimeout(connectionTimeout);
+        simpleFactory.setReadTimeout(readTimeout);
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
 
-		RestTemplate restTemplate = new RestTemplate(factory);
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (CollectionUtils.isEmpty(interceptors)) {
-			interceptors = new ArrayList<>();
-		}
-		interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
-		restTemplate.setInterceptors(interceptors);
+        RestTemplate restTemplate = new RestTemplate(factory);
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
+        restTemplate.setInterceptors(interceptors);
 
-		final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
+        final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
 
-		return apisResponse;
+        return apisResponse;
 
-	}
+    }
 
-	private static String convertToHashMaptoQueryString(HashMap<String, Object> params) {
+    protected ResponseEntity<String> httpsHelper(HttpMethod method, String url, HashMap<String, Object> params,
+                                                 String uniqueIdentifier) {
 
-		StringBuilder sb = new StringBuilder();
+        String urlparams = convertToHashMaptoQueryString(params);
 
-		Iterator<?> iter = params.entrySet().iterator();
-		while (iter.hasNext()) {
-			if (sb.length() > 0) {
-				sb.append('&');
-			}
-			Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-			sb.append(entry.getKey()).append("=").append(entry.getValue());
-		}
+        // HttpHeaders
+        HttpHeaders headers = new HttpHeaders();
 
-		return sb.toString();
-	}
+        // headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON
+        // }));
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("User-Agent", "USER_AGENT");
+
+        HttpEntity<String> requestEntityApp = new HttpEntity<>(urlparams, headers);
+
+//		RestTemplate restTemplate = new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(connectionTimeout))
+//				.setReadTimeout(Duration.ofMillis(readTimeout)).build();
+
+        HttpComponentsClientHttpRequestFactory simpleFactory = new HttpComponentsClientHttpRequestFactory();
+        simpleFactory.setConnectTimeout(connectionTimeout);
+        simpleFactory.setReadTimeout(readTimeout);
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(simpleFactory);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestTemplateLoggingInterceptor(uniqueIdentifier, url));
+        restTemplate.setInterceptors(interceptors);
+
+        final ResponseEntity<String> apisResponse = restTemplate.exchange(url, method, requestEntityApp, String.class);
+
+        return apisResponse;
+
+    }
+
+    private static String convertToHashMaptoQueryString(HashMap<String, Object> params) {
+
+        StringBuilder sb = new StringBuilder();
+
+        Iterator<?> iter = params.entrySet().iterator();
+        while (iter.hasNext()) {
+            if (sb.length() > 0) {
+                sb.append('&');
+            }
+            Entry<?, ?> entry = (Entry<?, ?>) iter.next();
+            sb.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+
+        return sb.toString();
+    }
 
 }

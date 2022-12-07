@@ -62,8 +62,8 @@ public class CourseService extends RestcallsHelper {
         System.out.println("Dataa" + request.getTitle());
         CourseModel courseModel = new CourseModel();
 
-       // generateToken("343434");
-       // CustomResponse<?> customResponse;
+        // generateToken("343434");
+        // CustomResponse<?> customResponse;
         CustomStatus customStatus = null;
         if (request != null) {
             CourseModel exist = courseRepository.findByTitle(request.getTitle());
@@ -90,13 +90,13 @@ public class CourseService extends RestcallsHelper {
     }
 
 
-    public CustomResponse<?> generateToken(String apiKey,TokenDTO request) {
-        Map<String, Object> responseMap=null;
+    public CustomResponse<?> generateToken(String apiKey, TokenDTO request) {
+        Map<String, Object> responseMap = null;
 
-       // responseMap.put("MESSAGE", "Failed");
+        // responseMap.put("MESSAGE", "Failed");
         // responseMap.put("STATUS", false);
 
-        String Url ="https://api-finserve-uat.azure-api.net/authentication/api/v3/authenticate/merchant";
+        String Url = "https://api-finserve-uat.azure-api.net/authentication/api/v3/authenticate/merchant";
 
         JSONObject payload = new JSONObject();
 
@@ -105,54 +105,37 @@ public class CourseService extends RestcallsHelper {
         CustomStatus customStatus = null;
         try {
 
-            System.out.println("before RESPONSE......." );
+            System.out.println("before RESPONSE.......");
             ResponseEntity<String> response = httpsHelper(HttpMethod.POST, Url,
                     apiKey, payload.toString(), MediaType.APPLICATION_JSON, "8778888");
-            System.out.println("RESPONSE..here....." +response.getBody());
-            System.out.println("RESPONSE..here....." +response.getBody());
-            //System.out.println("RESPONSE..code....." +response.getBody().ge);
 
             if (response.getStatusCodeValue() == 200) {
-                customStatus = CustomStatus.strip("Empty Request");
-           customStatus.setStatus(true);
-           customStatus.setCode(200);
-           // return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
+                customStatus = CustomStatus.strip("success");
+                customStatus.setStatus(true);
+                customStatus.setCode(200);
                 JSONObject responseBodyObject = new JSONObject(response.getBody());
-                System.out.println("Response body....Token "+responseBodyObject);
+                System.out.println("Response body....Token " + responseBodyObject);
                 ObjectMapper mapper = new ObjectMapper();
                 String json = responseBodyObject.toString();
-                    // convert JSON string to Map
-                    Map<String, String> map = mapper.readValue(json, Map.class);
+                // convert JSON string to Map
+                Map<String, String> map = mapper.readValue(json, Map.class);
+                System.out.println(map);
+                return new CustomResponse<>(customStatus, map);
 
-                    // it works
-                    //Map<String, String> map = mapper.readValue(json, new TypeReference<Map<String, String>>() {});
-
-                    System.out.println(map);
-
-
-
-                return new CustomResponse<>(customStatus,map );
-//                if (responseBodyObject.getBoolean("successful")) {
-//
-//                    // Format response
-//                    JSONObject responseJsonObject = responseBodyObject.getJSONObject("responseObject");
-//                    //  responseMap.put("DATA-OUT", formatResponseObject("66"));
-//                    // responseMap.put("STATUS", true);
-//                    // responseMap.put("MESSAGE", "Success");
-//
-//
-//                }
-//
-//                else {
-//
-//
-//
-//                }
-
-            }
-            else{
-               // customStatus = CustomStatus.strip("Empty Request");
+            } else if (response.getStatusCodeValue() == 401) {
+                customStatus = CustomStatus.strip("Empty Request");
                 customStatus.setStatus(false);
+                customStatus.setCode(401);
+                JSONObject responseBodyObject = new JSONObject(response.getBody());
+                System.out.println("Response body....Token " + responseBodyObject);
+                ObjectMapper mapper = new ObjectMapper();
+                String json = responseBodyObject.toString();
+                // convert JSON string to Map
+                Map<String, String> map = mapper.readValue(json, Map.class);
+                customStatus.setMessage(map.get("message"));
+            } else {
+                System.out.println(response.getStatusCode());
+                    customStatus.setStatus(false);
                 customStatus.setCode((response.getStatusCodeValue()));
                 return new CustomResponse<>(customStatus, HttpStatus.BAD_REQUEST);
             }

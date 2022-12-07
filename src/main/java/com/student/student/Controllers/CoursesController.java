@@ -6,7 +6,10 @@ import com.student.student.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import com.student.student.DTO.CustomResponse;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -21,7 +24,7 @@ public class CoursesController {
          }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> registercourse( @RequestBody CourseDto request){
+    public ResponseEntity<?> registercourse(@Validated(value =CourseDto.Create.class ) @RequestBody CourseDto request){
         CustomResponse<?> response=courseService.registerCourse(request);
         return Util.getResponse(response);
     }
