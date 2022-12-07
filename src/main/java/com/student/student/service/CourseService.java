@@ -121,7 +121,6 @@ public class CourseService extends RestcallsHelper {
                 customStatus.setStatus(false);
                 customStatus.setCode(401);
                 JSONObject responseBodyObject = new JSONObject(response.getBody());
-                System.out.println("Response body....Token " + responseBodyObject);
                 ObjectMapper mapper = new ObjectMapper();
                 String json = responseBodyObject.toString();
                 // convert JSON string to Map
