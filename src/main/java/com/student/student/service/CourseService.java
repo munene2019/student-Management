@@ -92,10 +92,6 @@ public class CourseService extends RestcallsHelper {
 
     public CustomResponse<?> generateToken(String apiKey, TokenDTO request) {
         Map<String, Object> responseMap = null;
-
-        // responseMap.put("MESSAGE", "Failed");
-        // responseMap.put("STATUS", false);
-
         String Url = "https://api-finserve-uat.azure-api.net/authentication/api/v3/authenticate/merchant";
 
         JSONObject payload = new JSONObject();
@@ -105,7 +101,6 @@ public class CourseService extends RestcallsHelper {
         CustomStatus customStatus = null;
         try {
 
-            System.out.println("before RESPONSE.......");
             ResponseEntity<String> response = httpsHelper(HttpMethod.POST, Url,
                     apiKey, payload.toString(), MediaType.APPLICATION_JSON, "8778888");
 
@@ -114,7 +109,6 @@ public class CourseService extends RestcallsHelper {
                 customStatus.setStatus(true);
                 customStatus.setCode(200);
                 JSONObject responseBodyObject = new JSONObject(response.getBody());
-                System.out.println("Response body....Token " + responseBodyObject);
                 ObjectMapper mapper = new ObjectMapper();
                 String json = responseBodyObject.toString();
                 // convert JSON string to Map
