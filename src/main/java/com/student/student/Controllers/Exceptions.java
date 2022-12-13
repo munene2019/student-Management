@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class Exceptions extends ResponseEntityExceptionHandler {
-
+///
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -23,7 +23,7 @@ public class Exceptions extends ResponseEntityExceptionHandler {
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-        BadRequestException error = new BadRequestException(details, "Validation Failed");
+        BadRequestException error = new BadRequestException(details, "Validation FailedTTT");
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }
