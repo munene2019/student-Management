@@ -3,6 +3,7 @@ package com.paymentGateway.student.Controllers;
 import com.paymentGateway.student.DTO.CustomResponse;
 import com.paymentGateway.student.DTO.MPESA;
 import com.paymentGateway.student.services.Interfaces.MpesaServiceInterface;
+import com.proxy.Dispatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class MpesaController {
     @PostMapping(path = "/pay")
     public CustomResponse<?> mpesaPay(@RequestBody MPESA request) throws IOException {
         System.out.println("STK PUSH REQUEST..." + request);
+
         CustomResponse<?> response = mpesaServiceInterface.sTKPush(request);
 
         return response;
@@ -30,6 +32,8 @@ public class MpesaController {
         @PostMapping(path = "/callback")
         public ResponseEntity<String> callBack (@RequestBody Object payload)  {
             System.out.println("STK PUSH CALLBACK..." + payload);
+            runner(payload);
+
             //jsonObject = JsonParser.(payload).getAsJsonObject();
            // CustomResponse<?> response = mpesaServiceInterface.sTKPush(request);
             return ResponseEntity.ok("Callback received successfully");
@@ -37,5 +41,9 @@ public class MpesaController {
 
             // return Util.getResponse(response);
         }
+    public static void runner(Object Payload) {
+        System.out.println("{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}");
+        Dispatcher.sendMessage(Payload.toString());
+    }
     }
 

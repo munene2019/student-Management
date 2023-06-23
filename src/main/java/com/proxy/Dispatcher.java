@@ -44,7 +44,7 @@ public class Dispatcher {
 	}
 
 	public static void sendMessage(String msg) {
-		messageProducer.publish("registration", msg);
+		messageProducer.publish("test", msg);
 	}
 
 }
