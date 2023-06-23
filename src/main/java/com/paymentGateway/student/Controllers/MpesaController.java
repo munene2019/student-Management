@@ -1,5 +1,7 @@
 package com.paymentGateway.student.Controllers;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.paymentGateway.student.DTO.CustomResponse;
 import com.paymentGateway.student.DTO.MPESA;
 import com.paymentGateway.student.services.Interfaces.MpesaServiceInterface;
@@ -32,7 +34,9 @@ public class MpesaController {
         @PostMapping(path = "/callback")
         public ResponseEntity<String> callBack (@RequestBody Object payload)  {
             System.out.println("STK PUSH CALLBACK..." + payload);
-            runner(payload);
+            mpesaServiceInterface.callProcessing(payload);
+
+            //runner(payload);
 
             //jsonObject = JsonParser.(payload).getAsJsonObject();
            // CustomResponse<?> response = mpesaServiceInterface.sTKPush(request);
@@ -42,7 +46,7 @@ public class MpesaController {
             // return Util.getResponse(response);
         }
     public static void runner(Object Payload) {
-        System.out.println("{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}");
+        System.out.println("..............................callback......");
         Dispatcher.sendMessage(Payload.toString());
     }
     }

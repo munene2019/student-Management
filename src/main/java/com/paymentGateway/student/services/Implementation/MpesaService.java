@@ -1,5 +1,6 @@
 package com.paymentGateway.student.services.Implementation;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.paymentGateway.student.DTO.CustomResponse;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.paymentGateway.student.Controllers.MpesaController.runner;
+
 @Service
 @Slf4j
 public class MpesaService implements MpesaServiceInterface {
@@ -22,7 +25,17 @@ public class MpesaService implements MpesaServiceInterface {
     public MpesaService(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
     }
+public void callProcessing(Object payload){
+        try{
+           // JsonObject jsonObject=new JsonObject();
+            System.out.println("PAYLOAD...."+payload);
+            runner(payload);
+        }
+        catch (Exception ex){
+            System.out.println("Exception"+ex);
+        }
 
+}
     @Override
     public CustomResponse<?> sTKPush(MPESA request) throws IOException {
         Map<String, Object> responseMap = null;
