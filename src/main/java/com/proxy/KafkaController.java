@@ -31,7 +31,7 @@ public class KafkaController {
 	}
 
 	public static void runner() {
-		System.out.println("{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}");
+		System.out.println("Incoming Callbacks Messages....");
 		Dispatcher.sendMessage("We are testing ");
 	}
 

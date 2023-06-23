@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 public class KafkaConsumer {
     @KafkaListener(topics = "test", groupId = "registration")
     public void listenGroupFoo(String message) {
-        System.out.println("Received Message in group Mugambi: " + message);
+        System.out.println("Received MPESA STKPUSH callback Message : " + message);
     }
 }
