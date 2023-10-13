@@ -13,6 +13,7 @@ import okhttp3.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 import static com.paymentGateway.student.Controllers.MpesaController.runner;
@@ -25,17 +26,18 @@ public class MpesaService implements MpesaServiceInterface {
     public MpesaService(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
     }
-public void callProcessing(Object payload){
-        try{
-           // JsonObject jsonObject=new JsonObject();
-            System.out.println("PAYLOAD...."+payload);
+
+    public void callProcessing(Object payload) {
+        try {
+            // JsonObject jsonObject=new JsonObject();
+            System.out.println("PAYLOAD...." + payload);
             runner(payload);
-        }
-        catch (Exception ex){
-            System.out.println("Exception"+ex);
+        } catch (Exception ex) {
+            System.out.println("Exception" + ex);
         }
 
-}
+    }
+
     @Override
     public CustomResponse<?> sTKPush(MPESA request) throws IOException {
         Map<String, Object> responseMap = null;
@@ -62,7 +64,7 @@ public void callProcessing(Object payload){
         Request request1 = new Request.Builder()
                 .url(Url)
                 .post(requestBody)
-                .addHeader("Authorization", "Bearer "+tokenGenerate())
+                .addHeader("Authorization", "Bearer " + tokenGenerate())
                 .build();
 
         JsonObject jsonObject = new JsonObject();
@@ -86,11 +88,20 @@ public void callProcessing(Object payload){
     }
 
     public String tokenGenerate() throws IOException {
+        String  appKey="uPszISVUKQN59JhEBw9e1jrpLzCzzeCN";
+        String appSecret="oMAl2hLSA25F7eoy";
+
+        String appKeySecret = appKey+":"+appSecret;
+        String bearer = new String(Base64.getEncoder().encode(appKeySecret.getBytes()));
+        System.out.println("BEARER2.."+bearer);
+
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder()
+
+
                 .url("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials")
                 .method("GET", null)
-                .addHeader("Authorization", "Basic cFJZcjZ6anEwaThMMXp6d1FETUxwWkIzeVBDa2hNc2M6UmYyMkJmWm9nMHFRR2xWOQ==")
+                .addHeader("Authorization", "Basic "+bearer)
                 .build();
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();

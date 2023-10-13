@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(value = "/mpesa")
+@RequestMapping(value = "/test")
 public class MpesaController {
 
     MpesaServiceInterface mpesaServiceInterface;
@@ -34,7 +34,7 @@ public class MpesaController {
         @PostMapping(path = "/callback")
         public ResponseEntity<String> callBack (@RequestBody Object payload)  {
             System.out.println("STK PUSH CALLBACK..." + payload);
-            mpesaServiceInterface.callProcessing(payload);
+           // mpesaServiceInterface.callProcessing(payload);
 
             //runner(payload);
 
@@ -47,7 +47,7 @@ public class MpesaController {
         }
     public static void runner(Object Payload) {
         System.out.println("..............................callback......");
-        Dispatcher.sendMessage(Payload.toString());
+      //  Dispatcher.sendMessage(Payload.toString());
     }
     }
 
