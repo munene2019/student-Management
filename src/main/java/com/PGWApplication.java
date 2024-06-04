@@ -1,6 +1,5 @@
 package com;
 
-import com.proxy.MessageProducer;
 import okhttp3.OkHttpClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,10 +31,10 @@ public class PGWApplication {
 		return new RestTemplate();
 	}
 
-	@Bean
-	public MessageProducer messageProducer() {
-		return new MessageProducer();
-
-
-	}
+//	@Bean
+//	public MessageProducer messageProducer() {
+//		return new MessageProducer();
+//
+//
+//	}
 }
