@@ -1,3 +1,0 @@
-CREATE USER 'todo-user'@'%' IDENTIFIED BY 'dummytodos';
-GRANT ALL PRIVILEGES ON studentManagement.* TO 'todo-user'@'%';
-FLUSH PRIVILEGES;
