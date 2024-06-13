@@ -1,3 +1,21 @@
+#version: '3.8'
+#
+#services:
+#  server:
+#    container_name: springboot-container
+#    build: .
+#    restart: always
+#    image: image-java  # Replace with your actual image name
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      # Spring Boot environment variables (replace with your actual values)
+#      SPRING_DATASOURCE_URL: jdbc:mariadb://127.0.0.1:3306/studentmanagement
+#      SPRING_DATASOURCE_USERNAME: root
+#      SPRING_DATASOURCE_PASSWORD:
+#      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+#
+#
 version: '3.8'
 
 services:
@@ -5,14 +23,35 @@ services:
     container_name: springboot-container
     build: .
     restart: always
-    image: image-java  # Replace with your actual image name
+    image: image-java
     ports:
       - "8080:8080"
-    environment:
-      # Spring Boot environment variables (replace with your actual values)
-      SPRING_DATASOURCE_URL: jdbc:mariadb://127.0.0.1:3306/studentmanagement
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD:
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+    depends_on:
+      mysql:
+        condition: service_healthy
 
+  mysql:
+    container_name: mysqlcontainer
+    image: image-db  # Use the correct image name here
+    environment:
+      MYSQL_ROOT_PASSWORD: "root2024"
+      MYSQL_DATABASE: studentManagement
+      MYSQL_USER: "rogers"
+      MYSQL_PASSWORD: "root2024"
+    networks:
+      - rogers
+    ports:
+      - "3306:3307"
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'mysqladmin ping -h localhost && echo success'" ]
+      interval: 60s  # Already increased to 30 seconds
+      timeout: 5s
+      retries: 5
+
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+networks:
+  rogers:
 
